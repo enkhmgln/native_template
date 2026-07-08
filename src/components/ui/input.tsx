@@ -20,7 +20,6 @@ export function Input({ label, error, style, ...props }: InputProps) {
           styles.input,
           {
             backgroundColor: colors.inputBg,
-            borderColor: error ? colors.danger : colors.border,
             borderRadius: radius.md,
             color: colors.text,
             fontSize: fontSize.md,
@@ -46,7 +45,6 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   input: {
-    borderWidth: 1,
     minHeight: 48,
   },
 });

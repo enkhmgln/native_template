@@ -13,7 +13,6 @@ export function Card({ style, children, ...props }: CardProps) {
         styles.base,
         {
           backgroundColor: colors.card,
-          borderColor: colors.border,
           borderRadius: radius.lg,
           padding: spacing.md,
         },
@@ -28,7 +27,6 @@ export function Card({ style, children, ...props }: CardProps) {
 
 const styles = StyleSheet.create({
   base: {
-    borderWidth: 1,
     width: "100%",
   },
 });

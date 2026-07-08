@@ -2,19 +2,29 @@ import { useState, type ReactNode } from "react";
 import { Alert, StyleSheet, View } from "react-native";
 
 import {
+  Accordion,
+  AccordionItem,
   Avatar,
   Badge,
   Button,
   Card,
+  Checkbox,
   Chip,
   Divider,
   EmptyState,
   IconButton,
+  Image,
   Input,
   Screen,
+  Select,
+  Sheet,
   Skeleton,
   Spinner,
   Switch,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
   Text,
   Textarea,
 } from "@/components/ui";
@@ -83,6 +93,17 @@ export default function HomeScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [notifications, setNotifications] = useState(true);
   const [selectedChip, setSelectedChip] = useState("Design");
+  const [agreed, setAgreed] = useState(false);
+  const [city, setCity] = useState<string | undefined>("ulaanbaatar");
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState("all");
+
+  const cityOptions = [
+    { label: "Улаанбаатар", value: "ulaanbaatar" },
+    { label: "Дархан", value: "darkhan" },
+    { label: "Эрдэнэт", value: "erdenet" },
+    { label: "Ховд", value: "hovd" },
+  ];
 
   function handlePress() {
     setLoading(true);
@@ -347,6 +368,91 @@ export default function HomeScreen() {
           <Divider label="or" />
           <Text variant="muted">More content</Text>
         </Card>
+      </ShowcaseSection>
+
+      <ShowcaseSection description="expo-image wrapper with themed radius." title="Image">
+        <Card>
+          <Image
+            source={{ uri: "https://picsum.photos/800/480" }}
+            style={{ height: 180 }}
+          />
+        </Card>
+      </ShowcaseSection>
+
+      <ShowcaseSection description="Boolean field with label." title="Checkbox">
+        <Card>
+          <Checkbox
+            checked={agreed}
+            label="Үйлчилгээний нөхцөлийг зөвшөөрч байна"
+            onCheckedChange={setAgreed}
+          />
+        </Card>
+      </ShowcaseSection>
+
+      <ShowcaseSection description="Mobile picker via bottom sheet." title="Select">
+        <Card>
+          <Select
+            label="Хот"
+            onValueChange={setCity}
+            options={cityOptions}
+            placeholder="Хот сонгох"
+            value={city}
+          />
+        </Card>
+      </ShowcaseSection>
+
+      <ShowcaseSection description="Slide-up panel for actions or custom content." title="Sheet">
+        <Card style={{ gap: spacing.sm }}>
+          <Button onPress={() => setSheetOpen(true)} title="Open sheet" />
+          <Sheet onClose={() => setSheetOpen(false)} title="Үйлдэл сонгох" visible={sheetOpen}>
+            <View style={{ gap: spacing.sm }}>
+              <Button onPress={() => setSheetOpen(false)} title="Засах" variant="ghost" />
+              <Button onPress={() => setSheetOpen(false)} title="Хуваалцах" variant="secondary" />
+              <Button onPress={() => setSheetOpen(false)} title="Устгах" variant="danger" />
+            </View>
+          </Sheet>
+        </Card>
+      </ShowcaseSection>
+
+      <ShowcaseSection description="In-screen tabs with tab content panels." title="Tabs">
+        <Card>
+          <Tabs onValueChange={setActiveTab} value={activeTab}>
+            <TabsList>
+              <TabsTrigger value="all">Бүгд</TabsTrigger>
+              <TabsTrigger value="active">Идэвхтэй</TabsTrigger>
+              <TabsTrigger value="done">Дууссан</TabsTrigger>
+            </TabsList>
+            <TabsContent value="all">
+              <Text style={{ marginTop: spacing.md }} variant="body">
+                Бүх зүйлсийн жагсаалт энд харагдана.
+              </Text>
+            </TabsContent>
+            <TabsContent value="active">
+              <Text style={{ marginTop: spacing.md }} variant="body">
+                Идэвхтэй зүйлс энд харагдана.
+              </Text>
+            </TabsContent>
+            <TabsContent value="done">
+              <Text style={{ marginTop: spacing.md }} variant="body">
+                Дууссан зүйлс энд харагдана.
+              </Text>
+            </TabsContent>
+          </Tabs>
+        </Card>
+      </ShowcaseSection>
+
+      <ShowcaseSection description="Expandable FAQ-style sections." title="Accordion">
+        <Accordion defaultValue={["shipping"]}>
+          <AccordionItem title="Хүргэлт хэд хоногт ирдэг вэ?" value="shipping">
+            <Text variant="muted">Ихэнх захиалга 2-4 хоногт хүрдэг.</Text>
+          </AccordionItem>
+          <AccordionItem title="Буцаалт хийх боломжтой юу?" value="returns">
+            <Text variant="muted">14 хоногийн дотор буцаалт хийх боломжтой.</Text>
+          </AccordionItem>
+          <AccordionItem title="Төлбөрийн хэрэгслүүд" value="payments">
+            <Text variant="muted">Карт, QPay, банкны шилжүүлэг.</Text>
+          </AccordionItem>
+        </Accordion>
       </ShowcaseSection>
 
       <View style={{ height: spacing.xl }} />

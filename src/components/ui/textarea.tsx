@@ -18,10 +18,8 @@ export function Textarea({ label, error, style, ...props }: TextareaProps) {
         multiline
         placeholderTextColor={colors.muted}
         style={[
-          styles.input,
           {
             backgroundColor: colors.inputBg,
-            borderColor: error ? colors.danger : colors.border,
             borderRadius: radius.md,
             color: colors.text,
             fontSize: fontSize.md,
@@ -47,8 +45,5 @@ export function Textarea({ label, error, style, ...props }: TextareaProps) {
 const styles = StyleSheet.create({
   wrapper: {
     width: "100%",
-  },
-  input: {
-    borderWidth: 1,
   },
 });

@@ -27,7 +27,11 @@ export function Screen({
 
   const content = (
     <View
-      style={[padded && { padding: spacing.md }, styles.content, style]}
+      style={[
+        padded && { padding: spacing.md },
+        scroll ? styles.scrollInner : styles.content,
+        style,
+      ]}
       {...props}
     >
       {children}
@@ -58,6 +62,9 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
+  },
+  scrollInner: {
+    flexGrow: 1,
   },
   scrollContent: {
     flexGrow: 1,

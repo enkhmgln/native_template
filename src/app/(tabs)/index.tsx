@@ -4,7 +4,7 @@ import { StyleSheet, View } from "react-native";
 import { Button, Card, Input, Screen, Text } from "@/components/ui";
 import { useTheme } from "@/hooks/use-theme";
 
-export default function Index() {
+export default function HomeScreen() {
   const { spacing } = useTheme();
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
@@ -25,7 +25,11 @@ export default function Index() {
         <Text variant="label">Sign in</Text>
         <Input
           autoCapitalize="none"
-          error={email.length > 0 && !email.includes("@") ? "Invalid email" : undefined}
+          error={
+            email.length > 0 && !email.includes("@")
+              ? "Invalid email"
+              : undefined
+          }
           keyboardType="email-address"
           label="Email"
           onChangeText={setEmail}
@@ -33,7 +37,9 @@ export default function Index() {
           style={{ marginTop: spacing.sm }}
           value={email}
         />
-        <View style={[styles.actions, { marginTop: spacing.md, gap: spacing.sm }]}>
+        <View
+          style={[styles.actions, { marginTop: spacing.md, gap: spacing.sm }]}
+        >
           <Button loading={loading} onPress={handlePress} title="Continue" />
           <Button onPress={() => setEmail("")} title="Clear" variant="ghost" />
         </View>

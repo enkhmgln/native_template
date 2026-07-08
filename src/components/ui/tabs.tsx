@@ -1,5 +1,4 @@
-import { Ionicons } from "@expo/vector-icons";
-import { createContext, useContext, useState, type PropsWithChildren, type ReactNode } from "react";
+import { createContext, useContext, type PropsWithChildren, type ReactNode } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
 
 import { Text } from "@/components/ui/text";
@@ -26,30 +25,31 @@ type TabsProps = PropsWithChildren<{
 }>;
 
 export function Tabs({ value, onValueChange, children }: TabsProps) {
+  const { colors, radius, spacing } = useTheme();
+
   return (
-    <TabsContext.Provider value={{ value, onValueChange }}>{children}</TabsContext.Provider>
+    <TabsContext.Provider value={{ value, onValueChange }}>
+      <View
+        style={[
+          styles.root,
+          {
+            backgroundColor: colors.card,
+            borderRadius: radius.lg,
+            gap: spacing.md,
+            padding: spacing.md,
+          },
+        ]}
+      >
+        {children}
+      </View>
+    </TabsContext.Provider>
   );
 }
 
 export function TabsList({ children }: PropsWithChildren) {
-  const { colors, radius, spacing } = useTheme();
+  const { spacing } = useTheme();
 
-  return (
-    <View
-      style={[
-        styles.list,
-        {
-          backgroundColor: colors.card,
-          borderColor: colors.border,
-          borderRadius: radius.md,
-          gap: spacing.xs,
-          padding: spacing.xs,
-        },
-      ]}
-    >
-      {children}
-    </View>
-  );
+  return <View style={[styles.list, { gap: spacing.xs }]}>{children}</View>;
 }
 
 type TabsTriggerProps = {
@@ -104,8 +104,11 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   list: {
-    borderWidth: StyleSheet.hairlineWidth,
     flexDirection: "row",
+    width: "100%",
+  },
+  root: {
+    overflow: "hidden",
     width: "100%",
   },
   trigger: {

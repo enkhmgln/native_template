@@ -146,22 +146,29 @@ export default function HomeScreen() {
         Pull down to refresh. All template components in one place.
       </Text>
 
-      <ShowcaseSection
-        description="default, success, error."
-        title="Toast"
-      >
+      <ShowcaseSection description="default, success, error." title="Toast">
         <Card style={{ gap: spacing.sm }}>
           <Button
             onPress={() => showToast("Профайл шинэчлэгдлээ")}
             title="Default toast"
           />
           <Button
-            onPress={() => showToast({ message: "Өөрчлөлтүүд хадгалагдлаа", variant: "success" })}
+            onPress={() =>
+              showToast({
+                message: "Өөрчлөлтүүд хадгалагдлаа",
+                variant: "success",
+              })
+            }
             title="Success toast"
             variant="ghost"
           />
           <Button
-            onPress={() => showToast({ message: "Ямар нэг зүйл буруу боллоо", variant: "error" })}
+            onPress={() =>
+              showToast({
+                message: "Ямар нэг зүйл буруу боллоо",
+                variant: "error",
+              })
+            }
             title="Error toast"
             variant="ghost"
           />
@@ -183,8 +190,16 @@ export default function HomeScreen() {
             }
             title="Амжилттай alert"
           />
-          <Button onPress={handleWarningAlert} title="Анхааруулга alert" variant="secondary" />
-          <Button onPress={handleDeleteDemo} title="Алдаа confirm" variant="danger" />
+          <Button
+            onPress={handleWarningAlert}
+            title="Анхааруулга alert"
+            variant="secondary"
+          />
+          <Button
+            onPress={handleDeleteDemo}
+            title="Алдаа confirm"
+            variant="danger"
+          />
         </Card>
       </ShowcaseSection>
 
@@ -370,7 +385,10 @@ export default function HomeScreen() {
         </Card>
       </ShowcaseSection>
 
-      <ShowcaseSection description="expo-image wrapper with themed radius." title="Image">
+      <ShowcaseSection
+        description="expo-image wrapper with themed radius."
+        title="Image"
+      >
         <Card>
           <Image
             source={{ uri: "https://picsum.photos/800/480" }}
@@ -389,7 +407,10 @@ export default function HomeScreen() {
         </Card>
       </ShowcaseSection>
 
-      <ShowcaseSection description="Mobile picker via bottom sheet." title="Select">
+      <ShowcaseSection
+        description="Mobile picker via bottom sheet."
+        title="Select"
+      >
         <Card>
           <Select
             label="Хот"
@@ -401,53 +422,72 @@ export default function HomeScreen() {
         </Card>
       </ShowcaseSection>
 
-      <ShowcaseSection description="Slide-up panel for actions or custom content." title="Sheet">
+      <ShowcaseSection
+        description="Slide-up panel for actions or custom content."
+        title="Sheet"
+      >
         <Card style={{ gap: spacing.sm }}>
           <Button onPress={() => setSheetOpen(true)} title="Open sheet" />
-          <Sheet onClose={() => setSheetOpen(false)} title="Үйлдэл сонгох" visible={sheetOpen}>
+          <Sheet
+            onClose={() => setSheetOpen(false)}
+            title="Үйлдэл сонгох"
+            visible={sheetOpen}
+          >
             <View style={{ gap: spacing.sm }}>
-              <Button onPress={() => setSheetOpen(false)} title="Засах" variant="ghost" />
-              <Button onPress={() => setSheetOpen(false)} title="Хуваалцах" variant="secondary" />
-              <Button onPress={() => setSheetOpen(false)} title="Устгах" variant="danger" />
+              <Button
+                onPress={() => setSheetOpen(false)}
+                title="Засах"
+                variant="ghost"
+              />
+              <Button
+                onPress={() => setSheetOpen(false)}
+                title="Хуваалцах"
+                variant="secondary"
+              />
+              <Button
+                onPress={() => setSheetOpen(false)}
+                title="Устгах"
+                variant="danger"
+              />
             </View>
           </Sheet>
         </Card>
       </ShowcaseSection>
 
-      <ShowcaseSection description="In-screen tabs with tab content panels." title="Tabs">
-        <Card>
-          <Tabs onValueChange={setActiveTab} value={activeTab}>
-            <TabsList>
-              <TabsTrigger value="all">Бүгд</TabsTrigger>
-              <TabsTrigger value="active">Идэвхтэй</TabsTrigger>
-              <TabsTrigger value="done">Дууссан</TabsTrigger>
-            </TabsList>
-            <TabsContent value="all">
-              <Text style={{ marginTop: spacing.md }} variant="body">
-                Бүх зүйлсийн жагсаалт энд харагдана.
-              </Text>
-            </TabsContent>
-            <TabsContent value="active">
-              <Text style={{ marginTop: spacing.md }} variant="body">
-                Идэвхтэй зүйлс энд харагдана.
-              </Text>
-            </TabsContent>
-            <TabsContent value="done">
-              <Text style={{ marginTop: spacing.md }} variant="body">
-                Дууссан зүйлс энд харагдана.
-              </Text>
-            </TabsContent>
-          </Tabs>
-        </Card>
+      <ShowcaseSection
+        description="In-screen tabs with tab content panels."
+        title="Tabs"
+      >
+        <Tabs onValueChange={setActiveTab} value={activeTab}>
+          <TabsList>
+            <TabsTrigger value="all">Бүгд</TabsTrigger>
+            <TabsTrigger value="active">Идэвхтэй</TabsTrigger>
+            <TabsTrigger value="done">Дууссан</TabsTrigger>
+          </TabsList>
+          <TabsContent value="all">
+            <Text variant="body">Бүх зүйлсийн жагсаалт энд харагдана.</Text>
+          </TabsContent>
+          <TabsContent value="active">
+            <Text variant="body">Идэвхтэй зүйлс энд харагдана.</Text>
+          </TabsContent>
+          <TabsContent value="done">
+            <Text variant="body">Дууссан зүйлс энд харагдана.</Text>
+          </TabsContent>
+        </Tabs>
       </ShowcaseSection>
 
-      <ShowcaseSection description="Expandable FAQ-style sections." title="Accordion">
+      <ShowcaseSection
+        description="Expandable FAQ-style sections."
+        title="Accordion"
+      >
         <Accordion defaultValue={["shipping"]}>
           <AccordionItem title="Хүргэлт хэд хоногт ирдэг вэ?" value="shipping">
             <Text variant="muted">Ихэнх захиалга 2-4 хоногт хүрдэг.</Text>
           </AccordionItem>
           <AccordionItem title="Буцаалт хийх боломжтой юу?" value="returns">
-            <Text variant="muted">14 хоногийн дотор буцаалт хийх боломжтой.</Text>
+            <Text variant="muted">
+              14 хоногийн дотор буцаалт хийх боломжтой.
+            </Text>
           </AccordionItem>
           <AccordionItem title="Төлбөрийн хэрэгслүүд" value="payments">
             <Text variant="muted">Карт, QPay, банкны шилжүүлэг.</Text>

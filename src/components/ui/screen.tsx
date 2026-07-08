@@ -1,4 +1,5 @@
 import {
+  RefreshControl,
   ScrollView,
   StyleSheet,
   View,
@@ -12,12 +13,16 @@ import { useTheme } from "@/hooks/use-theme";
 type ScreenProps = ViewProps & {
   scroll?: boolean;
   padded?: boolean;
-  scrollProps?: Omit<ScrollViewProps, "children">;
+  refreshing?: boolean;
+  onRefresh?: () => void;
+  scrollProps?: Omit<ScrollViewProps, "children" | "refreshControl">;
 };
 
 export function Screen({
   scroll = false,
   padded = true,
+  refreshing = false,
+  onRefresh,
   style,
   children,
   scrollProps,
@@ -44,6 +49,16 @@ export function Screen({
         <ScrollView
           contentContainerStyle={styles.scrollContent}
           keyboardShouldPersistTaps="handled"
+          refreshControl={
+            onRefresh ? (
+              <RefreshControl
+                colors={[colors.primary]}
+                onRefresh={onRefresh}
+                refreshing={refreshing}
+                tintColor={colors.primary}
+              />
+            ) : undefined
+          }
           showsVerticalScrollIndicator={false}
           {...scrollProps}
         >

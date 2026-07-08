@@ -9,7 +9,7 @@ import {
 import { Text } from "@/components/ui/text";
 import { useTheme } from "@/hooks/use-theme";
 
-type ButtonVariant = "primary" | "ghost" | "danger";
+type ButtonVariant = "primary" | "secondary" | "ghost" | "danger";
 
 type ButtonProps = Omit<PressableProps, "children" | "style"> & {
   title: string;
@@ -35,6 +35,11 @@ export function Button({
       borderColor: colors.primary,
       textColor: colors.primaryText,
     },
+    secondary: {
+      backgroundColor: colors.secondary,
+      borderColor: colors.secondary,
+      textColor: colors.secondaryText,
+    },
     ghost: {
       backgroundColor: "transparent",
       borderColor: colors.border,
@@ -59,7 +64,8 @@ export function Button({
           borderRadius: radius.md,
           paddingVertical: spacing.sm + 4,
           paddingHorizontal: spacing.md,
-          opacity: isDisabled ? 0.5 : pressed ? 0.85 : 1,
+          opacity: isDisabled ? 0.5 : pressed ? 0.88 : 1,
+          transform: [{ scale: pressed && !isDisabled ? 0.98 : 1 }],
         },
         style,
       ]}

@@ -1,7 +1,10 @@
 import Constants from "expo-constants";
+import { useState } from "react";
 import { Alert, Linking, Pressable, StyleSheet, View } from "react-native";
 
-import { Button, Card, Screen, Text } from "@/components/ui";
+import { Button, Card, Screen, Switch, Text } from "@/components/ui";
+import { useDialog } from "@/hooks/use-dialog";
+import { useToast } from "@/hooks/use-toast";
 import { useTheme } from "@/hooks/use-theme";
 
 type SettingsRowProps = {
@@ -39,11 +42,23 @@ function SettingsRow({ label, value, onPress, destructive }: SettingsRowProps) {
 }
 
 export default function SettingsScreen() {
-  const { spacing } = useTheme();
+  const { colors, spacing } = useTheme();
+  const toast = useToast();
+  const { confirm } = useDialog();
+  const [notifications, setNotifications] = useState(true);
   const appVersion = Constants.expoConfig?.version ?? "1.0.0";
 
-  function handleSignOut() {
-    Alert.alert("Sign out", "Auth is not wired up yet.");
+  async function handleSignOut() {
+    const confirmed = await confirm({
+      title: "Sign out?",
+      message: "You will need to sign in again to access your account.",
+      confirmLabel: "Sign out",
+      variant: "danger",
+    });
+
+    if (confirmed) {
+      toast.show("Signed out");
+    }
   }
 
   function openLink(url: string) {
@@ -62,7 +77,6 @@ export default function SettingsScreen() {
         <SettingsRow label="Version" value={appVersion} />
         <SettingsRow label="Theme" value="System" />
       </Card>
-      <Text variant="title">Settings</Text>
 
       <Card style={{ marginTop: spacing.md }}>
         <Text variant="label">Account</Text>
@@ -70,10 +84,15 @@ export default function SettingsScreen() {
           label="Profile"
           onPress={() => Alert.alert("Coming soon")}
         />
-        <SettingsRow
-          label="Notifications"
-          onPress={() => Alert.alert("Coming soon")}
-        />
+        <View style={[styles.switchRow, { borderBottomColor: colors.border }]}>
+          <View style={{ flex: 1 }}>
+            <Text variant="body">Notifications</Text>
+            <Text style={{ marginTop: spacing.xs }} variant="muted">
+              Receive push notifications
+            </Text>
+          </View>
+          <Switch onValueChange={setNotifications} value={notifications} />
+        </View>
       </Card>
 
       <Card style={{ marginTop: spacing.md }}>
@@ -101,6 +120,13 @@ const styles = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
     flexDirection: "row",
     justifyContent: "space-between",
+    width: "100%",
+  },
+  switchRow: {
+    alignItems: "center",
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    flexDirection: "row",
+    paddingVertical: 12,
     width: "100%",
   },
 });

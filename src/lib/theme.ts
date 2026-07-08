@@ -27,9 +27,14 @@ export const lightColors = {
   muted: "#71717A",
   primary: "#6366F1",
   primaryText: "#FFFFFF",
+  secondary: "#64748B",
+  secondaryText: "#FFFFFF",
   danger: "#EF4444",
   border: "#E4E4E7",
   inputBg: "#FFFFFF",
+  success: "#16A34A",
+  warning: "#D97706",
+  overlay: "rgba(15, 23, 42, 0.45)",
 } as const;
 
 export const darkColors = {
@@ -39,11 +44,18 @@ export const darkColors = {
   muted: "#A1A1AA",
   primary: "#818CF8",
   primaryText: "#FFFFFF",
+  secondary: "#94A3B8",
+  secondaryText: "#0F172A",
   danger: "#F87171",
   border: "#27272A",
   inputBg: "#18181B",
+  success: "#4ADE80",
+  warning: "#FBBF24",
+  overlay: "rgba(0, 0, 0, 0.6)",
 } as const;
 
 export type ThemeColors = {
   [K in keyof typeof lightColors]: string;
 };
+
+export type FeedbackVariant = "default" | "success" | "warning" | "danger";

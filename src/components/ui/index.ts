@@ -21,3 +21,4 @@ export { Switch } from "@/components/ui/switch";
 export { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 export { Text } from "@/components/ui/text";
 export { Textarea } from "@/components/ui/textarea";
+export { Toast } from "@/components/ui/toast";

@@ -11,8 +11,8 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { Text } from "@/components/ui/text";
 import { useTheme } from "@/hooks/use-theme";
-import { useToastStore, type ToastItem, type ToastVariant } from "@/stores/toast-store";
 import type { ThemeColors } from "@/lib/theme";
+import { useToastStore, type ToastItem, type ToastVariant } from "@/stores/toast-store";
 
 const TOAST_DURATION_MS = 3200;
 const SWIPE_DISMISS_THRESHOLD = 24;
@@ -29,11 +29,15 @@ function getToastStyle(variant: ToastVariant, colors: ThemeColors) {
         icon: "alert-circle" as const,
         tint: colors.danger,
       };
-    default:
+    case "default":
       return {
         icon: "information-circle" as const,
         tint: colors.primary,
       };
+    default: {
+      const _exhaustive: never = variant;
+      return _exhaustive;
+    }
   }
 }
 
@@ -163,7 +167,7 @@ function ToastView({ toast, onHide }: { toast: ToastItem; onHide: () => void }) 
   );
 }
 
-export function ToastHost() {
+export function Toast() {
   const toast = useToastStore((state) => state.toast);
   const hide = useToastStore((state) => state.hide);
 

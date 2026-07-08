@@ -1,0 +1,65 @@
+import {
+  ScrollView,
+  StyleSheet,
+  View,
+  type ScrollViewProps,
+  type ViewProps,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+
+import { useTheme } from "@/hooks/use-theme";
+
+type ScreenProps = ViewProps & {
+  scroll?: boolean;
+  padded?: boolean;
+  scrollProps?: Omit<ScrollViewProps, "children">;
+};
+
+export function Screen({
+  scroll = false,
+  padded = true,
+  style,
+  children,
+  scrollProps,
+  ...props
+}: ScreenProps) {
+  const { colors, spacing } = useTheme();
+
+  const content = (
+    <View
+      style={[padded && { padding: spacing.md }, styles.content, style]}
+      {...props}
+    >
+      {children}
+    </View>
+  );
+
+  return (
+    <SafeAreaView style={[styles.root, { backgroundColor: colors.bg }]}>
+      {scroll ? (
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+          {...scrollProps}
+        >
+          {content}
+        </ScrollView>
+      ) : (
+        content
+      )}
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+  },
+  content: {
+    flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
+  },
+});

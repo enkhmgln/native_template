@@ -1,17 +1,49 @@
-import { Text, View, StyleSheet } from "react-native";
+import { useState } from "react";
+import { StyleSheet, View } from "react-native";
+
+import { Button, Card, Input, Screen, Text } from "@/components/ui";
+import { useTheme } from "@/hooks/use-theme";
 
 export default function Index() {
+  const { spacing } = useTheme();
+  const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  function handlePress() {
+    setLoading(true);
+    setTimeout(() => setLoading(false), 1200);
+  }
+
   return (
-    <View style={styles.container}>
-      <Text>Edit src/app/index.tsx to edit this screen.</Text>
-    </View>
+    <Screen scroll>
+      <Text variant="title">Native Template</Text>
+      <Text style={{ marginTop: spacing.xs }} variant="muted">
+        Direct styles, no Tailwind. Clone this and ship.
+      </Text>
+
+      <Card style={{ marginTop: spacing.lg }}>
+        <Text variant="label">Sign in</Text>
+        <Input
+          autoCapitalize="none"
+          error={email.length > 0 && !email.includes("@") ? "Invalid email" : undefined}
+          keyboardType="email-address"
+          label="Email"
+          onChangeText={setEmail}
+          placeholder="you@example.com"
+          style={{ marginTop: spacing.sm }}
+          value={email}
+        />
+        <View style={[styles.actions, { marginTop: spacing.md, gap: spacing.sm }]}>
+          <Button loading={loading} onPress={handlePress} title="Continue" />
+          <Button onPress={() => setEmail("")} title="Clear" variant="ghost" />
+        </View>
+      </Card>
+    </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+  actions: {
+    width: "100%",
   },
 });

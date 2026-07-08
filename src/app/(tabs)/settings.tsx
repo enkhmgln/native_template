@@ -3,9 +3,9 @@ import { useState } from "react";
 import { Alert, Linking, Pressable, StyleSheet, View } from "react-native";
 
 import { Button, Card, Screen, Switch, Text } from "@/components/ui";
-import { useDialog } from "@/hooks/use-dialog";
 import { useTheme } from "@/hooks/use-theme";
-import { useToast } from "@/hooks/use-toast";
+import { useDialogStore } from "@/stores/dialog-store";
+import { useToastStore } from "@/stores/toast-store";
 
 type SettingsRowProps = {
   label: string;
@@ -43,8 +43,8 @@ function SettingsRow({ label, value, onPress, destructive }: SettingsRowProps) {
 
 export default function SettingsScreen() {
   const { colors, spacing } = useTheme();
-  const toast = useToast();
-  const { confirm } = useDialog();
+  const showToast = useToastStore((state) => state.show);
+  const confirm = useDialogStore((state) => state.confirm);
   const [notifications, setNotifications] = useState(true);
   const appVersion = Constants.expoConfig?.version ?? "1.0.0";
 
@@ -57,7 +57,7 @@ export default function SettingsScreen() {
     });
 
     if (confirmed) {
-      toast.show("Гаралтаа хийлээ");
+      showToast("Гаралтаа хийлээ");
     }
   }
 

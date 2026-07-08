@@ -18,10 +18,10 @@ import {
   Text,
   Textarea,
 } from "@/components/ui";
-import { useDialog } from "@/hooks/use-dialog";
 import { useTheme } from "@/hooks/use-theme";
-import { useToast } from "@/hooks/use-toast";
 import type { ThemeColors } from "@/lib/theme";
+import { useDialogStore } from "@/stores/dialog-store";
+import { useToastStore } from "@/stores/toast-store";
 
 type ShowcaseSectionProps = {
   title: string;
@@ -74,8 +74,9 @@ function ColorSwatchInline({ name, value }: { name: string; value: string }) {
 
 export default function HomeScreen() {
   const { colors, isDark, spacing } = useTheme();
-  const toast = useToast();
-  const { alert, confirm } = useDialog();
+  const showToast = useToastStore((state) => state.show);
+  const alert = useDialogStore((state) => state.alert);
+  const confirm = useDialogStore((state) => state.confirm);
   const [email, setEmail] = useState("");
   const [notes, setNotes] = useState("");
   const [loading, setLoading] = useState(false);
@@ -92,7 +93,7 @@ export default function HomeScreen() {
     setRefreshing(true);
     setTimeout(() => {
       setRefreshing(false);
-      toast.show("Content refreshed");
+      showToast("Агуулга шинэчлэгдлээ");
     }, 1000);
   }
 
@@ -113,7 +114,7 @@ export default function HomeScreen() {
     });
 
     if (confirmed) {
-      toast.show("Зүйл устгагдлаа", "error");
+      showToast("Зүйл устгагдлаа", "error");
     }
   }
 
@@ -125,21 +126,21 @@ export default function HomeScreen() {
       </Text>
 
       <ShowcaseSection
-        description="Top notifications with default, success, and error."
+        description="default, success, error."
         title="Toast"
       >
         <Card style={{ gap: spacing.sm }}>
           <Button
-            onPress={() => toast.show("Profile updated")}
+            onPress={() => showToast("Профайл шинэчлэгдлээ")}
             title="Default toast"
           />
           <Button
-            onPress={() => toast.show("Changes saved", "success")}
+            onPress={() => showToast({ message: "Өөрчлөлтүүд хадгалагдлаа", variant: "success" })}
             title="Success toast"
             variant="ghost"
           />
           <Button
-            onPress={() => toast.show("Something went wrong", "error")}
+            onPress={() => showToast({ message: "Ямар нэг зүйл буруу боллоо", variant: "error" })}
             title="Error toast"
             variant="ghost"
           />

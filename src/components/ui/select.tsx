@@ -72,41 +72,70 @@ export function Select({
         <Ionicons color={colors.muted} name="chevron-down" size={18} />
       </Pressable>
       {error ? (
-        <Text style={{ color: colors.danger, marginTop: spacing.xs }} variant="muted">
+        <Text
+          style={{ color: colors.danger, marginTop: spacing.xs }}
+          variant="muted"
+        >
           {error}
         </Text>
       ) : null}
 
-      <Sheet onClose={() => setOpen(false)} title={sheetTitle ?? label} visible={open}>
-        <View style={{ gap: spacing.xs }}>
-          {options.map((option) => {
+      <Sheet
+        onClose={() => setOpen(false)}
+        title={sheetTitle ?? label}
+        visible={open}
+      >
+        <View style={styles.optionGroup}>
+          {options.map((option, index) => {
             const isSelected = option.value === value;
+
             return (
-              <Pressable
-                key={option.value}
-                onPress={() => handleSelect(option.value)}
-                style={({ pressed }) => [
-                  styles.option,
-                  {
-                    backgroundColor: isSelected
-                      ? `${colors.primary}14`
-                      : pressed
-                        ? colors.card
-                        : "transparent",
-                    borderRadius: radius.md,
-                    paddingHorizontal: spacing.md,
-                    paddingVertical: spacing.sm + 4,
-                  },
-                ]}
-              >
-                <Text
-                  style={{ color: isSelected ? colors.primary : colors.text, fontWeight: isSelected ? "600" : "400" }}
-                  variant="body"
+              <View key={option.value}>
+                {index > 0 ? (
+                  <View
+                    style={[
+                      styles.optionDivider,
+                      {
+                        backgroundColor: colors.border,
+                        // marginVertical: spacing.xs,
+                      },
+                    ]}
+                  />
+                ) : null}
+                <Pressable
+                  onPress={() => handleSelect(option.value)}
+                  style={({ pressed }) => [
+                    styles.option,
+                    {
+                      backgroundColor: isSelected
+                        ? `${colors.primary}14`
+                        : pressed
+                          ? colors.card
+                          : "transparent",
+                      borderRadius: radius.sm,
+                      paddingHorizontal: spacing.md,
+                      paddingVertical: spacing.sm + 4,
+                    },
+                  ]}
                 >
-                  {option.label}
-                </Text>
-                {isSelected ? <Ionicons color={colors.primary} name="checkmark" size={20} /> : null}
-              </Pressable>
+                  <Text
+                    style={{
+                      color: isSelected ? colors.primary : colors.text,
+                      fontWeight: isSelected ? "600" : "400",
+                    }}
+                    variant="body"
+                  >
+                    {option.label}
+                  </Text>
+                  {isSelected ? (
+                    <Ionicons
+                      color={colors.primary}
+                      name="checkmark"
+                      size={20}
+                    />
+                  ) : null}
+                </Pressable>
+              </View>
             );
           })}
         </View>
@@ -126,6 +155,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flexDirection: "row",
     justifyContent: "space-between",
+    minHeight: 48,
+  },
+  optionDivider: {
+    height: 0.7,
+  },
+  optionGroup: {
+    width: "100%",
   },
   wrapper: {
     width: "100%",

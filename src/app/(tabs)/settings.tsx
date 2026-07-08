@@ -4,8 +4,8 @@ import { Alert, Linking, Pressable, StyleSheet, View } from "react-native";
 
 import { Button, Card, Screen, Switch, Text } from "@/components/ui";
 import { useDialog } from "@/hooks/use-dialog";
-import { useToast } from "@/hooks/use-toast";
 import { useTheme } from "@/hooks/use-theme";
+import { useToast } from "@/hooks/use-toast";
 
 type SettingsRowProps = {
   label: string;
@@ -50,14 +50,14 @@ export default function SettingsScreen() {
 
   async function handleSignOut() {
     const confirmed = await confirm({
-      title: "Sign out?",
-      message: "You will need to sign in again to access your account.",
-      confirmLabel: "Sign out",
-      variant: "danger",
+      title: "Гарах уу?",
+      message: "Дахин нэвтрэх шаардлагатай болно.",
+      confirmLabel: "Гарах",
+      variant: "error",
     });
 
     if (confirmed) {
-      toast.show("Signed out");
+      toast.show("Гаралтаа хийлээ");
     }
   }
 
@@ -108,7 +108,7 @@ export default function SettingsScreen() {
       </Card>
 
       <View style={{ marginTop: spacing.lg }}>
-        <Button onPress={handleSignOut} title="Sign out" variant="danger" />
+        <Button onPress={handleSignOut} title="Гарах" variant="danger" />
       </View>
     </Screen>
   );

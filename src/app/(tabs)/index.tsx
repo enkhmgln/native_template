@@ -19,8 +19,8 @@ import {
   Textarea,
 } from "@/components/ui";
 import { useDialog } from "@/hooks/use-dialog";
-import { useToast } from "@/hooks/use-toast";
 import { useTheme } from "@/hooks/use-theme";
+import { useToast } from "@/hooks/use-toast";
 import type { ThemeColors } from "@/lib/theme";
 
 type ShowcaseSectionProps = {
@@ -29,7 +29,11 @@ type ShowcaseSectionProps = {
   children: ReactNode;
 };
 
-function ShowcaseSection({ title, description, children }: ShowcaseSectionProps) {
+function ShowcaseSection({
+  title,
+  description,
+  children,
+}: ShowcaseSectionProps) {
   const { spacing } = useTheme();
 
   return (
@@ -71,7 +75,7 @@ function ColorSwatchInline({ name, value }: { name: string; value: string }) {
 export default function HomeScreen() {
   const { colors, isDark, spacing } = useTheme();
   const toast = useToast();
-  const { confirm } = useDialog();
+  const { alert, confirm } = useDialog();
   const [email, setEmail] = useState("");
   const [notes, setNotes] = useState("");
   const [loading, setLoading] = useState(false);
@@ -92,29 +96,24 @@ export default function HomeScreen() {
     }, 1000);
   }
 
-  async function handleDeleteDemo() {
-    const confirmed = await confirm({
-      title: "Delete item?",
-      message: "This action cannot be undone.",
-      confirmLabel: "Delete",
-      variant: "danger",
-    });
-
-    if (confirmed) {
-      toast.show("Item deleted", "error");
-    }
-  }
-
-  async function handleWarningDialog() {
-    const confirmed = await confirm({
-      title: "Discard changes?",
-      message: "You have unsaved changes that will be lost.",
-      confirmLabel: "Discard",
+  async function handleWarningAlert() {
+    await alert({
+      title: "Анхаар!",
+      message: "Таны сесс 5 минутын дараа дуусна.",
       variant: "warning",
     });
+  }
+
+  async function handleDeleteDemo() {
+    const confirmed = await confirm({
+      title: "Зүйл устгах уу?",
+      message: "Энэ үйлдлийг буцаах боломжгүй.",
+      confirmLabel: "Устгах",
+      variant: "error",
+    });
 
     if (confirmed) {
-      toast.show("Changes discarded");
+      toast.show("Зүйл устгагдлаа", "error");
     }
   }
 
@@ -130,7 +129,10 @@ export default function HomeScreen() {
         title="Toast"
       >
         <Card style={{ gap: spacing.sm }}>
-          <Button onPress={() => toast.show("Profile updated")} title="Default toast" />
+          <Button
+            onPress={() => toast.show("Profile updated")}
+            title="Default toast"
+          />
           <Button
             onPress={() => toast.show("Changes saved", "success")}
             title="Success toast"
@@ -145,23 +147,22 @@ export default function HomeScreen() {
       </ShowcaseSection>
 
       <ShowcaseSection
-        description="Variant dialogs with icon, title, and actions."
-        title="Dialog"
+        description="alert() — 1 товч, confirm() — 2 товч."
+        title="Цонх"
       >
         <Card style={{ gap: spacing.sm }}>
           <Button
             onPress={() =>
-              void confirm({
-                title: "Enable notifications?",
-                message: "Stay up to date with important activity.",
-                confirmLabel: "Enable",
-                variant: "default",
+              void alert({
+                title: "Амжилттай хадгалагдлаа",
+                message: "Таны өөрчлөлтүүд амжилттай хадгалагдлаа.",
+                variant: "success",
               })
             }
-            title="Default dialog"
+            title="Амжилттай alert"
           />
-          <Button onPress={handleWarningDialog} title="Warning dialog" variant="secondary" />
-          <Button onPress={handleDeleteDemo} title="Danger dialog" variant="danger" />
+          <Button onPress={handleWarningAlert} title="Анхааруулга alert" variant="secondary" />
+          <Button onPress={handleDeleteDemo} title="Алдаа confirm" variant="danger" />
         </Card>
       </ShowcaseSection>
 
@@ -174,7 +175,12 @@ export default function HomeScreen() {
             label={isDark ? "Dark mode" : "Light mode"}
             variant={isDark ? "primary" : "default"}
           />
-          <View style={[styles.colorGrid, { gap: spacing.sm, marginTop: spacing.md }]}>
+          <View
+            style={[
+              styles.colorGrid,
+              { gap: spacing.sm, marginTop: spacing.md },
+            ]}
+          >
             {(Object.entries(colors) as [keyof ThemeColors, string][]).map(
               ([name, value]) => (
                 <ColorSwatchInline key={name} name={name} value={value} />
@@ -208,11 +214,22 @@ export default function HomeScreen() {
       >
         <Card style={{ gap: spacing.sm }}>
           <Button loading={loading} onPress={handlePress} title="Continue" />
-          <Button onPress={() => setEmail("")} title="Secondary" variant="secondary" />
+          <Button
+            onPress={() => setEmail("")}
+            title="Secondary"
+            variant="secondary"
+          />
           <Button onPress={() => setEmail("")} title="Clear" variant="ghost" />
-          <Button onPress={() => Alert.alert("Deleted")} title="Delete" variant="danger" />
+          <Button
+            onPress={() => Alert.alert("Deleted")}
+            title="Delete"
+            variant="danger"
+          />
           <View style={[styles.row, { gap: spacing.sm }]}>
-            <IconButton name="heart-outline" onPress={() => Alert.alert("Liked")} />
+            <IconButton
+              name="heart-outline"
+              onPress={() => Alert.alert("Liked")}
+            />
             <IconButton name="share-outline" variant="ghost" />
             <IconButton name="trash-outline" variant="danger" />
           </View>
@@ -227,7 +244,9 @@ export default function HomeScreen() {
           <Input
             autoCapitalize="none"
             error={
-              email.length > 0 && !email.includes("@") ? "Invalid email" : undefined
+              email.length > 0 && !email.includes("@")
+                ? "Invalid email"
+                : undefined
             }
             keyboardType="email-address"
             label="Email"
@@ -295,7 +314,10 @@ export default function HomeScreen() {
         </Card>
       </ShowcaseSection>
 
-      <ShowcaseSection description="Loading and placeholder states." title="Feedback">
+      <ShowcaseSection
+        description="Loading and placeholder states."
+        title="Feedback"
+      >
         <Card style={{ gap: spacing.md }}>
           <Spinner label="Loading content..." size="large" />
           <Skeleton height={14} width="80%" />

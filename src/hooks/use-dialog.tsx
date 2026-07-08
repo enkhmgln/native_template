@@ -8,69 +8,89 @@ import {
   type PropsWithChildren,
 } from "react";
 
-import { Dialog } from "@/components/ui/dialog";
+import { Dialog, type DialogMode } from "@/components/ui/dialog";
 import type { FeedbackVariant } from "@/lib/theme";
 
-type DialogOptions = {
+type AlertOptions = {
+  title: string;
+  message?: string;
+  confirmLabel?: string;
+  variant: FeedbackVariant;
+};
+
+type ConfirmOptions = {
   title: string;
   message?: string;
   confirmLabel?: string;
   cancelLabel?: string;
-  variant?: FeedbackVariant;
-  /** @deprecated Use `variant: "danger"` instead. */
-  destructive?: boolean;
+  variant: FeedbackVariant;
+};
+
+type DialogState = {
+  mode: DialogMode;
+  options: AlertOptions | ConfirmOptions;
 };
 
 type DialogContextValue = {
-  confirm: (options: DialogOptions) => Promise<boolean>;
+  alert: (options: AlertOptions) => Promise<void>;
+  confirm: (options: ConfirmOptions) => Promise<boolean>;
 };
 
 const DialogContext = createContext<DialogContextValue | null>(null);
 
-function resolveVariant(options: DialogOptions): FeedbackVariant {
-  if (options.variant) {
-    return options.variant;
-  }
-  if (options.destructive) {
-    return "danger";
-  }
-  return "default";
-}
-
 export function DialogProvider({ children }: PropsWithChildren) {
-  const [options, setOptions] = useState<DialogOptions | null>(null);
+  const [state, setState] = useState<DialogState | null>(null);
   const [visible, setVisible] = useState(false);
-  const resolverRef = useRef<((value: boolean) => void) | null>(null);
+  const alertResolverRef = useRef<(() => void) | null>(null);
+  const confirmResolverRef = useRef<((value: boolean) => void) | null>(null);
 
-  const confirm = useCallback((dialogOptions: DialogOptions) => {
-    return new Promise<boolean>((resolve) => {
-      resolverRef.current = resolve;
-      setOptions(dialogOptions);
+  const alert = useCallback((options: AlertOptions) => {
+    return new Promise<void>((resolve) => {
+      alertResolverRef.current = resolve;
+      confirmResolverRef.current = null;
+      setState({ mode: "alert", options });
       setVisible(true);
     });
   }, []);
 
-  const close = useCallback((result: boolean) => {
-    setVisible(false);
-    setOptions(null);
-    resolverRef.current?.(result);
-    resolverRef.current = null;
+  const confirm = useCallback((options: ConfirmOptions) => {
+    return new Promise<boolean>((resolve) => {
+      confirmResolverRef.current = resolve;
+      alertResolverRef.current = null;
+      setState({ mode: "confirm", options });
+      setVisible(true);
+    });
   }, []);
 
-  const value = useMemo(() => ({ confirm }), [confirm]);
+  const closeAlert = useCallback(() => {
+    setVisible(false);
+    setState(null);
+    alertResolverRef.current?.();
+    alertResolverRef.current = null;
+  }, []);
+
+  const closeConfirm = useCallback((result: boolean) => {
+    setVisible(false);
+    setState(null);
+    confirmResolverRef.current?.(result);
+    confirmResolverRef.current = null;
+  }, []);
+
+  const value = useMemo(() => ({ alert, confirm }), [alert, confirm]);
 
   return (
     <DialogContext.Provider value={value}>
       {children}
-      {options ? (
+      {state ? (
         <Dialog
-          cancelLabel={options.cancelLabel}
-          confirmLabel={options.confirmLabel}
-          message={options.message}
-          onCancel={() => close(false)}
-          onConfirm={() => close(true)}
-          title={options.title}
-          variant={resolveVariant(options)}
+          cancelLabel={"cancelLabel" in state.options ? state.options.cancelLabel : undefined}
+          confirmLabel={state.options.confirmLabel}
+          message={state.options.message}
+          mode={state.mode}
+          onCancel={() => closeConfirm(false)}
+          onConfirm={() => (state.mode === "alert" ? closeAlert() : closeConfirm(true))}
+          title={state.options.title}
+          variant={state.options.variant}
           visible={visible}
         />
       ) : null}

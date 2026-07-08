@@ -1,5 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
-import { Modal, Pressable, StyleSheet, View } from "react-native";
+import { useEffect, useRef } from "react";
+import { Animated, Modal, Pressable, StyleSheet, View } from "react-native";
 
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
@@ -69,56 +70,76 @@ export function Dialog({
   onConfirm,
   onCancel,
 }: DialogProps) {
-  const { colors, radius, spacing } = useTheme();
+  const { colors, isDark, radius, spacing } = useTheme();
   const feedback = getDialogStyle(variant, colors);
+  const opacity = useRef(new Animated.Value(0)).current;
+  const scale = useRef(new Animated.Value(0.92)).current;
+
+  useEffect(() => {
+    if (!visible) {
+      return;
+    }
+
+    opacity.setValue(0);
+    scale.setValue(0.92);
+
+    Animated.parallel([
+      Animated.timing(opacity, { toValue: 1, duration: 200, useNativeDriver: true }),
+      Animated.spring(scale, { toValue: 1, friction: 8, tension: 120, useNativeDriver: true }),
+    ]).start();
+  }, [opacity, scale, visible]);
 
   return (
     <Modal animationType="fade" onRequestClose={onCancel} transparent visible={visible}>
       <Pressable onPress={onCancel} style={[styles.overlay, { backgroundColor: colors.overlay }]}>
-        <Pressable
-          onPress={(event) => event.stopPropagation()}
-          style={[
-            styles.card,
-            {
-              backgroundColor: colors.bg,
-              borderColor: colors.border,
-              borderRadius: radius.lg,
-              padding: spacing.lg,
-              shadowColor: colors.text,
-            },
-          ]}
-        >
-          <View
+        <Animated.View style={{ opacity, transform: [{ scale }], width: "100%", maxWidth: 360 }}>
+          <Pressable
+            accessibilityRole="alert"
+            accessible
+            onPress={(event) => event.stopPropagation()}
             style={[
-              styles.iconWrap,
+              styles.card,
+              isDark ? styles.cardShadowDark : styles.cardShadowLight,
               {
-                backgroundColor: feedback.iconBg,
-                borderRadius: radius.full,
+                backgroundColor: isDark ? colors.card : colors.bg,
+                borderColor: colors.border,
+                borderRadius: radius.lg,
+                padding: spacing.lg,
               },
             ]}
           >
-            <Ionicons color={feedback.iconColor} name={feedback.icon} size={28} />
-          </View>
+            <View
+              style={[
+                styles.iconWrap,
+                {
+                  backgroundColor: feedback.iconBg,
+                  borderRadius: radius.full,
+                },
+              ]}
+            >
+              <Ionicons color={feedback.iconColor} name={feedback.icon} size={28} />
+            </View>
 
-          <Text style={[styles.title, { marginTop: spacing.md }]} variant="title">
-            {title}
-          </Text>
-          {message ? (
-            <Text style={{ marginTop: spacing.sm, textAlign: "center" }} variant="muted">
-              {message}
+            <Text style={[styles.title, { marginTop: spacing.md }]} variant="title">
+              {title}
             </Text>
-          ) : null}
+            {message ? (
+              <Text style={{ marginTop: spacing.sm, textAlign: "center" }} variant="muted">
+                {message}
+              </Text>
+            ) : null}
 
-          <View style={[styles.actions, { gap: spacing.sm, marginTop: spacing.lg }]}>
-            <Button onPress={onCancel} style={styles.action} title={cancelLabel} variant="ghost" />
-            <Button
-              onPress={onConfirm}
-              style={styles.action}
-              title={confirmLabel}
-              variant={getConfirmVariant(variant)}
-            />
-          </View>
-        </Pressable>
+            <View style={[styles.actions, { gap: spacing.sm, marginTop: spacing.lg }]}>
+              <Button onPress={onCancel} style={styles.action} title={cancelLabel} variant="ghost" />
+              <Button
+                onPress={onConfirm}
+                style={styles.action}
+                title={confirmLabel}
+                variant={getConfirmVariant(variant)}
+              />
+            </View>
+          </Pressable>
+        </Animated.View>
       </Pressable>
     </Modal>
   );
@@ -134,13 +155,22 @@ const styles = StyleSheet.create({
   },
   card: {
     alignItems: "center",
-    borderWidth: 1,
-    elevation: 12,
-    maxWidth: 360,
-    shadowOffset: { width: 0, height: 12 },
-    shadowOpacity: 0.16,
-    shadowRadius: 24,
+    borderWidth: StyleSheet.hairlineWidth,
     width: "100%",
+  },
+  cardShadowDark: {
+    elevation: 16,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 16 },
+    shadowOpacity: 0.55,
+    shadowRadius: 28,
+  },
+  cardShadowLight: {
+    elevation: 14,
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 16 },
+    shadowOpacity: 0.22,
+    shadowRadius: 32,
   },
   iconWrap: {
     alignItems: "center",

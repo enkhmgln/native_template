@@ -9,7 +9,13 @@ import {
   useState,
   type PropsWithChildren,
 } from "react";
-import { Animated, StyleSheet, View } from "react-native";
+import {
+  AccessibilityInfo,
+  Animated,
+  PanResponder,
+  StyleSheet,
+  View,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { Text } from "@/components/ui/text";
@@ -19,6 +25,7 @@ import type { ThemeColors } from "@/lib/theme";
 export type ToastVariant = "default" | "success" | "error";
 
 type ToastState = {
+  id: number;
   message: string;
   variant: ToastVariant;
 };
@@ -29,65 +36,159 @@ type ToastContextValue = {
 
 const ToastContext = createContext<ToastContextValue | null>(null);
 
-const TOAST_DURATION_MS = 2800;
+const TOAST_DURATION_MS = 3200;
+const SWIPE_DISMISS_THRESHOLD = 24;
 
 function getToastStyle(variant: ToastVariant, colors: ThemeColors) {
   switch (variant) {
     case "success":
       return {
         icon: "checkmark-circle" as const,
-        iconBg: `${colors.success}18`,
-        iconColor: colors.success,
+        tint: colors.success,
       };
     case "error":
       return {
         icon: "alert-circle" as const,
-        iconBg: `${colors.danger}18`,
-        iconColor: colors.danger,
+        tint: colors.danger,
       };
     default:
       return {
         icon: "information-circle" as const,
-        iconBg: `${colors.primary}18`,
-        iconColor: colors.primary,
+        tint: colors.primary,
       };
   }
 }
 
-function ToastHost({ toast, onHide }: { toast: ToastState | null; onHide: () => void }) {
-  const { colors, radius, spacing } = useTheme();
+function ToastHost({
+  toast,
+  onHide,
+}: {
+  toast: ToastState | null;
+  onHide: () => void;
+}) {
+  const { colors, isDark, radius, spacing } = useTheme();
   const insets = useSafeAreaInsets();
   const opacity = useRef(new Animated.Value(0)).current;
-  const translateY = useRef(new Animated.Value(-12)).current;
+  const translateY = useRef(new Animated.Value(-16)).current;
   const scale = useRef(new Animated.Value(0.96)).current;
+  const reduceMotion = useRef(false);
+  const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const dismiss = useCallback(() => {
+    if (hideTimer.current) {
+      clearTimeout(hideTimer.current);
+      hideTimer.current = null;
+    }
+
+    if (reduceMotion.current) {
+      opacity.setValue(0);
+      onHide();
+      return;
+    }
+
+    Animated.parallel([
+      Animated.timing(opacity, {
+        toValue: 0,
+        duration: 180,
+        useNativeDriver: true,
+      }),
+      Animated.timing(translateY, {
+        toValue: -24,
+        duration: 180,
+        useNativeDriver: true,
+      }),
+      Animated.timing(scale, {
+        toValue: 0.96,
+        duration: 180,
+        useNativeDriver: true,
+      }),
+    ]).start(({ finished }) => {
+      if (finished) {
+        onHide();
+      }
+    });
+  }, [onHide, opacity, scale, translateY]);
+
+  const panResponder = useRef(
+    PanResponder.create({
+      onMoveShouldSetPanResponder: (_, gesture) =>
+        gesture.dy < -6 && Math.abs(gesture.dy) > Math.abs(gesture.dx),
+      onPanResponderMove: (_, gesture) => {
+        if (gesture.dy < 0) {
+          translateY.setValue(gesture.dy);
+          opacity.setValue(Math.max(0, 1 + gesture.dy / 80));
+        }
+      },
+      onPanResponderRelease: (_, gesture) => {
+        if (gesture.dy < -SWIPE_DISMISS_THRESHOLD) {
+          dismiss();
+        } else {
+          Animated.parallel([
+            Animated.spring(translateY, { toValue: 0, useNativeDriver: true }),
+            Animated.timing(opacity, {
+              toValue: 1,
+              duration: 120,
+              useNativeDriver: true,
+            }),
+          ]).start();
+        }
+      },
+    }),
+  ).current;
 
   useEffect(() => {
     if (!toast) {
       return;
     }
 
-    opacity.setValue(0);
-    translateY.setValue(-12);
-    scale.setValue(0.96);
+    let cancelled = false;
 
-    Animated.sequence([
-      Animated.parallel([
-        Animated.timing(opacity, { toValue: 1, duration: 240, useNativeDriver: true }),
-        Animated.spring(translateY, { toValue: 0, friction: 9, tension: 80, useNativeDriver: true }),
-        Animated.spring(scale, { toValue: 1, friction: 8, tension: 100, useNativeDriver: true }),
-      ]),
-      Animated.delay(TOAST_DURATION_MS),
-      Animated.parallel([
-        Animated.timing(opacity, { toValue: 0, duration: 200, useNativeDriver: true }),
-        Animated.timing(translateY, { toValue: -8, duration: 200, useNativeDriver: true }),
-        Animated.timing(scale, { toValue: 0.98, duration: 200, useNativeDriver: true }),
-      ]),
-    ]).start(({ finished }) => {
-      if (finished) {
-        onHide();
+    void AccessibilityInfo.isReduceMotionEnabled().then((enabled) => {
+      if (cancelled) {
+        return;
       }
+      reduceMotion.current = enabled;
+
+      if (enabled) {
+        opacity.setValue(1);
+        translateY.setValue(0);
+        scale.setValue(1);
+      } else {
+        opacity.setValue(0);
+        translateY.setValue(-16);
+        scale.setValue(0.96);
+        Animated.parallel([
+          Animated.timing(opacity, {
+            toValue: 1,
+            duration: 260,
+            useNativeDriver: true,
+          }),
+          Animated.spring(translateY, {
+            toValue: 0,
+            friction: 9,
+            tension: 80,
+            useNativeDriver: true,
+          }),
+          Animated.spring(scale, {
+            toValue: 1,
+            friction: 8,
+            tension: 120,
+            useNativeDriver: true,
+          }),
+        ]).start();
+      }
+
+      hideTimer.current = setTimeout(() => dismiss(), TOAST_DURATION_MS);
     });
-  }, [onHide, opacity, scale, toast, translateY]);
+
+    return () => {
+      cancelled = true;
+      if (hideTimer.current) {
+        clearTimeout(hideTimer.current);
+        hideTimer.current = null;
+      }
+    };
+  }, [dismiss, opacity, scale, toast, translateY]);
 
   if (!toast) {
     return null;
@@ -96,47 +197,45 @@ function ToastHost({ toast, onHide }: { toast: ToastState | null; onHide: () => 
   const feedback = getToastStyle(toast.variant, colors);
 
   return (
-    <Animated.View
-      pointerEvents="none"
+    <View
+      pointerEvents="box-none"
       style={[
         styles.host,
-        {
-          opacity,
-          paddingHorizontal: spacing.lg,
-          top: insets.top + spacing.sm,
-          transform: [{ translateY }, { scale }],
-        },
+        { paddingHorizontal: spacing.lg, top: insets.top + spacing.sm },
       ]}
     >
-      <View
+      <Animated.View
+        {...panResponder.panHandlers}
+        accessibilityLiveRegion={
+          toast.variant === "error" ? "assertive" : "polite"
+        }
+        accessibilityRole="alert"
+        accessible
         style={[
           styles.toast,
+          isDark ? styles.toastShadowDark : styles.toastShadowLight,
           {
-            backgroundColor: colors.bg,
+            backgroundColor: isDark ? colors.card : colors.bg,
             borderColor: colors.border,
             borderRadius: radius.lg,
+            opacity,
             paddingHorizontal: spacing.md,
             paddingVertical: spacing.sm + 2,
-            shadowColor: colors.text,
+            transform: [{ translateY }, { scale }],
           },
         ]}
       >
-        <View
-          style={[
-            styles.iconWrap,
-            {
-              backgroundColor: feedback.iconBg,
-              borderRadius: radius.full,
-            },
-          ]}
-        >
-          <Ionicons color={feedback.iconColor} name={feedback.icon} size={20} />
-        </View>
+        <Ionicons
+          color={feedback.tint}
+          name={feedback.icon}
+          size={22}
+          style={styles.icon}
+        />
         <Text numberOfLines={3} style={styles.message} variant="label">
           {toast.message}
         </Text>
-      </View>
-    </Animated.View>
+      </Animated.View>
+    </View>
   );
 }
 
@@ -147,16 +246,19 @@ export function ToastProvider({ children }: PropsWithChildren) {
     setToast(null);
   }, []);
 
-  const show = useCallback((message: string, variant: ToastVariant = "default") => {
-    setToast({ message, variant });
-  }, []);
+  const show = useCallback(
+    (message: string, variant: ToastVariant = "default") => {
+      setToast({ id: Date.now(), message, variant });
+    },
+    [],
+  );
 
   const value = useMemo(() => ({ show }), [show]);
 
   return (
     <ToastContext.Provider value={value}>
       {children}
-      <ToastHost toast={toast} onHide={hide} />
+      <ToastHost key={toast?.id} toast={toast} onHide={hide} />
     </ToastContext.Provider>
   );
 }
@@ -176,12 +278,8 @@ const styles = StyleSheet.create({
     right: 0,
     zIndex: 100,
   },
-  iconWrap: {
-    alignItems: "center",
+  icon: {
     flexShrink: 0,
-    height: 36,
-    justifyContent: "center",
-    width: 36,
   },
   message: {
     flex: 1,
@@ -191,14 +289,24 @@ const styles = StyleSheet.create({
     alignItems: "center",
     alignSelf: "center",
     borderWidth: StyleSheet.hairlineWidth,
-    elevation: 6,
     flexDirection: "row",
     gap: 12,
-    maxWidth: 400,
-    minHeight: 52,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
+    maxWidth: 440,
+    minHeight: 54,
     width: "100%",
+  },
+  toastShadowDark: {
+    elevation: 12,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.5,
+    shadowRadius: 16,
+  },
+  toastShadowLight: {
+    elevation: 10,
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.18,
+    shadowRadius: 24,
   },
 });

@@ -88,7 +88,11 @@ export function Select({
                 style={({ pressed }) => [
                   styles.option,
                   {
-                    backgroundColor: isSelected ? `${colors.primary}14` : pressed ? colors.card : "transparent",
+                    backgroundColor: isSelected
+                      ? `${colors.primary}14`
+                      : pressed
+                        ? colors.card
+                        : "transparent",
                     borderRadius: radius.md,
                     paddingHorizontal: spacing.md,
                     paddingVertical: spacing.sm + 4,
@@ -122,7 +126,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flexDirection: "row",
     justifyContent: "space-between",
-    width: "100%",
   },
   wrapper: {
     width: "100%",

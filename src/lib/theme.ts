@@ -20,6 +20,37 @@ export const fontSize = {
   xl: 28,
 } as const;
 
+export const fonts = {
+  thin: "GIP-Thin",
+  ultraLight: "GIP-UltraLight",
+  light: "GIP-Light",
+  regular: "GIP-Regular",
+  medium: "GIP-Medium",
+  semibold: "GIP-SemiBold",
+  bold: "GIP-Bold",
+  extraBold: "GIP-ExtraBold",
+  heavy: "GIP-Heavy",
+  black: "GIP-Black",
+} as const;
+
+export type FontWeight = keyof typeof fonts;
+
+export type TextVariant = "title" | "body" | "muted" | "label";
+
+const variantWeights = {
+  title: "bold",
+  body: "regular",
+  muted: "regular",
+  label: "semibold",
+} as const satisfies Record<TextVariant, FontWeight>;
+
+export function resolveFontFamily(
+  variant: TextVariant,
+  weight?: FontWeight,
+): string {
+  return fonts[weight ?? variantWeights[variant]];
+}
+
 export const lightColors = {
   bg: "#FFFFFF",
   card: "#F4F4F5",

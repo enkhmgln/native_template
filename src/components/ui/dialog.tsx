@@ -1,5 +1,5 @@
 import LottieView from "lottie-react-native";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Animated, Modal, Pressable, StyleSheet, View } from "react-native";
 
 import { Button } from "@/components/ui/button";
@@ -57,7 +57,13 @@ function getConfirmVariant(variant: FeedbackVariant) {
   }
 }
 
-function DialogIcon({ variant, visible }: { variant: FeedbackVariant; visible: boolean }) {
+function DialogIcon({
+  variant,
+  visible,
+}: {
+  variant: FeedbackVariant;
+  visible: boolean;
+}) {
   const lottieRef = useRef<LottieView>(null);
   const lottieSource = getLottieSource(variant);
 
@@ -72,7 +78,12 @@ function DialogIcon({ variant, visible }: { variant: FeedbackVariant; visible: b
 
   return (
     <View style={styles.lottieWrap}>
-      <LottieView ref={lottieRef} loop={false} source={lottieSource} style={styles.lottie} />
+      <LottieView
+        ref={lottieRef}
+        loop={false}
+        source={lottieSource}
+        style={styles.lottie}
+      />
     </View>
   );
 }
@@ -89,10 +100,11 @@ export function Dialog({
   onCancel,
 }: DialogProps) {
   const { colors, fontSize, isDark, radius, spacing } = useTheme();
-  const opacity = useRef(new Animated.Value(0)).current;
-  const scale = useRef(new Animated.Value(0.92)).current;
+  const [opacity] = useState(() => new Animated.Value(0));
+  const [scale] = useState(() => new Animated.Value(0.92));
   const isAlert = mode === "alert";
-  const resolvedConfirmLabel = confirmLabel ?? (isAlert ? "Ойлголоо" : "Батлах");
+  const resolvedConfirmLabel =
+    confirmLabel ?? (isAlert ? "Ойлголоо" : "Батлах");
 
   useEffect(() => {
     if (!visible) {
@@ -103,17 +115,36 @@ export function Dialog({
     scale.setValue(0.92);
 
     Animated.parallel([
-      Animated.timing(opacity, { toValue: 1, duration: 200, useNativeDriver: true }),
-      Animated.spring(scale, { toValue: 1, friction: 8, tension: 120, useNativeDriver: true }),
+      Animated.timing(opacity, {
+        toValue: 1,
+        duration: 200,
+        useNativeDriver: true,
+      }),
+      Animated.spring(scale, {
+        toValue: 1,
+        friction: 8,
+        tension: 120,
+        useNativeDriver: true,
+      }),
     ]).start();
   }, [opacity, scale, visible]);
 
   const handleDismiss = isAlert ? onConfirm : onCancel;
 
   return (
-    <Modal animationType="fade" onRequestClose={handleDismiss} transparent visible={visible}>
-      <Pressable onPress={handleDismiss} style={[styles.overlay, { backgroundColor: colors.overlay }]}>
-        <Animated.View style={[styles.cardWrap, { opacity, transform: [{ scale }] }]}>
+    <Modal
+      animationType="fade"
+      onRequestClose={handleDismiss}
+      transparent
+      visible={visible}
+    >
+      <Pressable
+        onPress={handleDismiss}
+        style={[styles.overlay, { backgroundColor: colors.overlay }]}
+      >
+        <Animated.View
+          style={[styles.cardWrap, { opacity, transform: [{ scale }] }]}
+        >
           <Pressable
             accessibilityRole="alert"
             accessible
@@ -140,6 +171,7 @@ export function Dialog({
                   marginTop: spacing.sm,
                 },
               ]}
+              variant="label"
             >
               {title}
             </Text>
@@ -157,7 +189,12 @@ export function Dialog({
               </Text>
             ) : null}
 
-            <View style={[styles.actions, { gap: spacing.sm, marginTop: spacing.md + 4 }]}>
+            <View
+              style={[
+                styles.actions,
+                { gap: spacing.sm, marginTop: spacing.md + 4 },
+              ]}
+            >
               {isAlert ? (
                 <Button
                   onPress={onConfirm}
@@ -167,7 +204,12 @@ export function Dialog({
                 />
               ) : (
                 <>
-                  <Button onPress={onCancel} style={styles.action} title={cancelLabel} variant="ghost" />
+                  <Button
+                    onPress={onCancel}
+                    style={styles.action}
+                    title={cancelLabel}
+                    variant="ghost"
+                  />
                   <Button
                     onPress={onConfirm}
                     style={styles.action}
@@ -235,7 +277,6 @@ const styles = StyleSheet.create({
     padding: 24,
   },
   title: {
-    fontWeight: "600",
     textAlign: "center",
   },
 });

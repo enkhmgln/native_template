@@ -119,11 +119,9 @@ export function Select({
                   ]}
                 >
                   <Text
-                    style={{
-                      color: isSelected ? colors.primary : colors.text,
-                      fontWeight: isSelected ? "600" : "400",
-                    }}
+                    style={{ color: isSelected ? colors.primary : colors.text }}
                     variant="body"
+                    weight={isSelected ? "semibold" : "regular"}
                   >
                     {option.label}
                   </Text>

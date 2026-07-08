@@ -76,8 +76,9 @@ export function TabsTrigger({ value, children }: TabsTriggerProps) {
       ]}
     >
       <Text
-        style={{ color: isActive ? colors.text : colors.muted, fontWeight: isActive ? "600" : "400" }}
+        style={{ color: isActive ? colors.text : colors.muted }}
         variant="label"
+        weight={isActive ? "semibold" : "regular"}
       >
         {children}
       </Text>

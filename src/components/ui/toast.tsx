@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   AccessibilityInfo,
   Animated,
@@ -44,9 +44,9 @@ function getToastStyle(variant: ToastVariant, colors: ThemeColors) {
 function ToastView({ toast, onHide }: { toast: ToastItem; onHide: () => void }) {
   const { colors, isDark, radius, spacing } = useTheme();
   const insets = useSafeAreaInsets();
-  const opacity = useRef(new Animated.Value(0)).current;
-  const translateY = useRef(new Animated.Value(-16)).current;
-  const scale = useRef(new Animated.Value(0.96)).current;
+  const [opacity] = useState(() => new Animated.Value(0));
+  const [translateY] = useState(() => new Animated.Value(-16));
+  const [scale] = useState(() => new Animated.Value(0.96));
   const reduceMotion = useRef(false);
   const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -73,28 +73,39 @@ function ToastView({ toast, onHide }: { toast: ToastItem; onHide: () => void }) 
     });
   }, [onHide, opacity, scale, translateY]);
 
-  const panResponder = useRef(
-    PanResponder.create({
-      onMoveShouldSetPanResponder: (_, gesture) =>
-        gesture.dy < -6 && Math.abs(gesture.dy) > Math.abs(gesture.dx),
-      onPanResponderMove: (_, gesture) => {
-        if (gesture.dy < 0) {
-          translateY.setValue(gesture.dy);
-          opacity.setValue(Math.max(0, 1 + gesture.dy / 80));
-        }
-      },
-      onPanResponderRelease: (_, gesture) => {
-        if (gesture.dy < -SWIPE_DISMISS_THRESHOLD) {
-          dismiss();
-        } else {
-          Animated.parallel([
-            Animated.spring(translateY, { toValue: 0, useNativeDriver: true }),
-            Animated.timing(opacity, { toValue: 1, duration: 120, useNativeDriver: true }),
-          ]).start();
-        }
-      },
-    }),
-  ).current;
+  const dismissRef = useRef(dismiss);
+
+  useEffect(() => {
+    dismissRef.current = dismiss;
+  }, [dismiss]);
+
+  // PanResponder handlers run during gestures, not render.
+  /* eslint-disable react-hooks/refs */
+  const panResponder = useMemo(
+    () =>
+      PanResponder.create({
+        onMoveShouldSetPanResponder: (_, gesture) =>
+          gesture.dy < -6 && Math.abs(gesture.dy) > Math.abs(gesture.dx),
+        onPanResponderMove: (_, gesture) => {
+          if (gesture.dy < 0) {
+            translateY.setValue(gesture.dy);
+            opacity.setValue(Math.max(0, 1 + gesture.dy / 80));
+          }
+        },
+        onPanResponderRelease: (_, gesture) => {
+          if (gesture.dy < -SWIPE_DISMISS_THRESHOLD) {
+            dismissRef.current();
+          } else {
+            Animated.parallel([
+              Animated.spring(translateY, { toValue: 0, useNativeDriver: true }),
+              Animated.timing(opacity, { toValue: 1, duration: 120, useNativeDriver: true }),
+            ]).start();
+          }
+        },
+      }),
+    [opacity, translateY],
+  );
+  /* eslint-enable react-hooks/refs */
 
   useEffect(() => {
     let cancelled = false;

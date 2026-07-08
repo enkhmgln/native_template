@@ -2,6 +2,7 @@ import { StyleSheet, TextInput, View, type TextInputProps } from "react-native";
 
 import { Text } from "@/components/ui/text";
 import { useTheme } from "@/hooks/use-theme";
+import { fonts } from "@/lib/theme";
 
 type TextareaProps = TextInputProps & {
   label?: string;
@@ -22,6 +23,7 @@ export function Textarea({ label, error, style, ...props }: TextareaProps) {
             backgroundColor: colors.inputBg,
             borderRadius: radius.md,
             color: colors.text,
+            fontFamily: fonts.regular,
             fontSize: fontSize.md,
             marginTop: label ? spacing.xs : 0,
             minHeight: 120,

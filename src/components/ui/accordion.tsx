@@ -1,11 +1,26 @@
 import { Ionicons } from "@expo/vector-icons";
-import { createContext, useContext, useState, type PropsWithChildren, type ReactNode } from "react";
-import { LayoutAnimation, Platform, Pressable, StyleSheet, UIManager, View } from "react-native";
+import {
+  createContext,
+  useContext,
+  useState,
+  type PropsWithChildren,
+} from "react";
+import {
+  LayoutAnimation,
+  Platform,
+  Pressable,
+  StyleSheet,
+  UIManager,
+  View,
+} from "react-native";
 
 import { Text } from "@/components/ui/text";
 import { useTheme } from "@/hooks/use-theme";
 
-if (Platform.OS === "android" && UIManager.setLayoutAnimationEnabledExperimental) {
+if (
+  Platform.OS === "android" &&
+  UIManager.setLayoutAnimationEnabledExperimental
+) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
@@ -31,7 +46,11 @@ type AccordionProps = PropsWithChildren<{
   defaultValue?: string[];
 }>;
 
-export function Accordion({ type = "single", defaultValue = [], children }: AccordionProps) {
+export function Accordion({
+  type = "single",
+  defaultValue = [],
+  children,
+}: AccordionProps) {
   const { spacing } = useTheme();
   const [openValues, setOpenValues] = useState(defaultValue);
 
@@ -42,7 +61,9 @@ export function Accordion({ type = "single", defaultValue = [], children }: Acco
       if (type === "single") {
         return isOpen ? [] : [value];
       }
-      return isOpen ? current.filter((item) => item !== value) : [...current, value];
+      return isOpen
+        ? current.filter((item) => item !== value)
+        : [...current, value];
     });
   };
 
@@ -81,9 +102,15 @@ export function AccordionItem({ value, title, children }: AccordionItemProps) {
         <Text style={styles.title} variant="label">
           {title}
         </Text>
-        <Ionicons color={colors.muted} name={isOpen ? "chevron-up" : "chevron-down"} size={18} />
+        <Ionicons
+          color={colors.muted}
+          name={isOpen ? "chevron-up" : "chevron-down"}
+          size={18}
+        />
       </Pressable>
-      {isOpen ? <View style={{ paddingBottom: spacing.md }}>{children}</View> : null}
+      {isOpen ? (
+        <View style={{ paddingBottom: spacing.md }}>{children}</View>
+      ) : null}
     </View>
   );
 }

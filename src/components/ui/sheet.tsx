@@ -44,7 +44,7 @@ export function Sheet({ visible, title, onClose, children }: SheetProps) {
                   marginTop: spacing.xs,
                 },
               ]}
-              variant="body"
+              variant="label"
             >
               {title}
             </Text>
@@ -64,7 +64,6 @@ const styles = StyleSheet.create({
     alignItems: "stretch",
   },
   title: {
-    fontWeight: "600",
     letterSpacing: -0.2,
     textAlign: "center",
   },

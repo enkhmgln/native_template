@@ -56,9 +56,9 @@ export function Badge({ label, variant = "default", style, ...props }: BadgeProp
         style={{
           color: variantStyle.color,
           fontSize: fontSize.sm - 1,
-          fontWeight: "600",
           lineHeight: Math.round((fontSize.sm - 1) * 1.3),
         }}
+        variant="label"
       >
         {label}
       </Text>

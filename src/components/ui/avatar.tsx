@@ -63,8 +63,9 @@ export function Avatar({ name = "User", source, size = "md" }: AvatarProps) {
         style={{
           color: colors.primaryText,
           fontSize: size === "lg" ? 20 : size === "md" ? 16 : 13,
-          fontWeight: "700",
         }}
+        variant="body"
+        weight="bold"
       >
         {getInitials(name)}
       </Text>

@@ -18,7 +18,7 @@ export type DialogMode = "alert" | "confirm";
 type DialogProps = {
   visible: boolean;
   mode: DialogMode;
-  title: string;
+  title?: string;
   message?: string;
   confirmLabel?: string;
   cancelLabel?: string;
@@ -26,6 +26,25 @@ type DialogProps = {
   onConfirm: () => void;
   onCancel: () => void;
 };
+
+function getDefaultTitle(mode: DialogMode, variant: FeedbackVariant) {
+  if (mode === "confirm") {
+    return "Баталгаажуулах уу?";
+  }
+
+  switch (variant) {
+    case "success":
+      return "Амжилттай";
+    case "warning":
+      return "Анхаарна уу";
+    case "error":
+      return "Алдаа";
+    default: {
+      const _exhaustive: never = variant;
+      return _exhaustive;
+    }
+  }
+}
 
 function getLottieSource(variant: FeedbackVariant) {
   switch (variant) {
@@ -105,6 +124,7 @@ export function Dialog({
   const isAlert = mode === "alert";
   const resolvedConfirmLabel =
     confirmLabel ?? (isAlert ? "Ойлголоо" : "Батлах");
+  const resolvedTitle = title ?? getDefaultTitle(mode, variant);
 
   useEffect(() => {
     if (!visible) {
@@ -173,7 +193,7 @@ export function Dialog({
               ]}
               variant="label"
             >
-              {title}
+              {resolvedTitle}
             </Text>
             {message ? (
               <Text

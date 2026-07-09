@@ -1,13 +1,6 @@
-import { useToastStore } from "@/stores/toast-store";
 import { MutationCache, QueryCache, QueryClient } from "@tanstack/react-query";
 
-function toErrorMessage(error: unknown) {
-  if (error instanceof Error && error.message) {
-    return error.message;
-  }
-
-  return "Алдаа гарлаа";
-}
+import { useDialogStore } from "@/stores/dialog-store";
 
 export const queryClient = new QueryClient({
   mutationCache: new MutationCache({
@@ -16,7 +9,10 @@ export const queryClient = new QueryClient({
         return;
       }
 
-      useToastStore.getState().show(toErrorMessage(error), "error");
+      void useDialogStore.getState().alert({
+        message: error instanceof Error ? error.message : undefined,
+        variant: "error",
+      });
     },
   }),
   queryCache: new QueryCache({
@@ -25,7 +21,10 @@ export const queryClient = new QueryClient({
         return;
       }
 
-      useToastStore.getState().show(toErrorMessage(error), "error");
+      void useDialogStore.getState().alert({
+        message: error instanceof Error ? error.message : undefined,
+        variant: "error",
+      });
     },
   }),
   defaultOptions: {

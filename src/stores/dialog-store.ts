@@ -4,14 +4,14 @@ import type { DialogMode } from "@/components/ui/dialog";
 import type { FeedbackVariant } from "@/lib/theme";
 
 export type AlertOptions = {
-  title: string;
+  title?: string;
   message?: string;
   confirmLabel?: string;
   variant: FeedbackVariant;
 };
 
 export type ConfirmOptions = {
-  title: string;
+  title?: string;
   message?: string;
   confirmLabel?: string;
   cancelLabel?: string;

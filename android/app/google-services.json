@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "816593150639",
+    "project_id": "mobile-architechture",
+    "storage_bucket": "mobile-architechture.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:816593150639:android:bd1936c26e3d992142aa5a",
+        "android_client_info": {
+          "package_name": "mn.nexusinfinity.package"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCO2alS97qhF4b6g6Q31Wwhz9fSTY2oE-k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:816593150639:android:dcd716aae148aaa942aa5a",
+        "android_client_info": {
+          "package_name": "mn.nexusinfinity.rebox"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCO2alS97qhF4b6g6Q31Wwhz9fSTY2oE-k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

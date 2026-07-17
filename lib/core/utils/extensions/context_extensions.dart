@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 extension ContextExtensions on BuildContext {
   ColorScheme get colorScheme => Theme.of(this).colorScheme;
 
+  TextTheme get textTheme => Theme.of(this).textTheme;
+
   double get screenWidth => MediaQuery.sizeOf(this).width;
 
   double get screenHeight => MediaQuery.sizeOf(this).height;
@@ -17,11 +19,21 @@ extension ContextExtensions on BuildContext {
 
   double get bottomPadding => padding.bottom;
 
+  double get safeAreaTop => viewPadding.top;
+
+  double get safeAreaBottom => viewPadding.bottom;
+
   double get keyboardHeight => viewInsets.bottom;
 
   bool get isKeyboardVisible => viewInsets.bottom > 0;
 
   Brightness get brightness => Theme.of(this).brightness;
+
+  bool get isDark => brightness == Brightness.dark;
+
+  bool get isLight => brightness == Brightness.light;
+
+  bool get isTablet => screenWidth >= 600;
 
   bool get isDesktop => screenWidth >= 1024;
 
@@ -31,11 +43,17 @@ extension ContextExtensions on BuildContext {
 
   bool get isAccessibleNavigation => MediaQuery.accessibleNavigationOf(this);
 
-  ScaffoldMessengerState get messenger => ScaffoldMessenger.of(this);
+  FocusScopeNode get focusScope => FocusScope.of(this);
 
-  void unfocus() => FocusScope.of(this).unfocus();
+  NavigatorState get navigator => Navigator.of(this);
+
+  bool get canPop => navigator.canPop();
+
+  void unfocus() => focusScope.unfocus();
 
   void hideKeyboard() => unfocus();
+
+  void pop<T extends Object?>([T? result]) => navigator.pop(result);
 
   void runIfMounted(VoidCallback action) {
     if (mounted) action();

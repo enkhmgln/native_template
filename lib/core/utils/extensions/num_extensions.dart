@@ -11,4 +11,12 @@ extension NumExtensions on num {
       EdgeInsets.symmetric(horizontal: toDouble());
 
   EdgeInsets get verticalPadding => EdgeInsets.symmetric(vertical: toDouble());
+
+  BorderRadius get radius => BorderRadius.circular(toDouble());
+
+  Radius get circular => Radius.circular(toDouble());
+
+  Duration get milliseconds => Duration(milliseconds: round());
+
+  Duration get seconds => Duration(seconds: round());
 }

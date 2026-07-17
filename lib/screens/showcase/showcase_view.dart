@@ -39,7 +39,7 @@ class ShowcaseView extends GetView<ShowcaseController> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Showcase', style: AppStyles.appBarTitle),
+        title: Text('Үсгийн загвар', style: AppStyles.appBarTitle),
       ),
       body: ListView.separated(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
@@ -60,7 +60,7 @@ class ShowcaseView extends GetView<ShowcaseController> {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  'The quick brown fox jumps over the lazy dog',
+                  'Хурдан бор үнэг залхуу нохой дээгүүр үсэрнэ',
                   style: style.copyWith(color: colors.onSurface),
                 ),
               ],

@@ -1,5 +1,4 @@
 import 'package:get/get.dart';
-import '/core/shared/_.dart';
 import '/screens/_.dart';
 
 abstract final class AppPages {
@@ -12,13 +11,18 @@ abstract final class AppPages {
   //     : DeviceManager.isOnboardingComplete
   //     ? LoginView.routeName
   //     : WalkthroughView.routeName;
-  static String get initial => SplashView.routeName;
+  static String get initial => ShowcaseView.routeName;
 
   static final List<GetPage<dynamic>> routes = [
     GetPage(
       name: SplashView.routeName,
       page: () => const SplashView(),
       binding: SplashBinding(),
+    ),
+    GetPage(
+      name: ShowcaseView.routeName,
+      page: () => const ShowcaseView(),
+      binding: ShowcaseBinding(),
     ),
   ];
 }

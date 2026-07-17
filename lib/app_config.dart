@@ -11,6 +11,6 @@ abstract final class AppConfig {
       options: DefaultFirebaseOptions.currentPlatform,
     );
     await StoreManager.shared.init();
-    await NotificationManager.init();
+    // await NotificationManager.init();
   }
 }
